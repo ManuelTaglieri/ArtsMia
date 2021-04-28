@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import it.polito.tdp.artsmia.model.Adiacenza;
 import it.polito.tdp.artsmia.model.ArtObject;
 
 public class ArtsmiaDAO {
@@ -68,6 +69,35 @@ public class ArtsmiaDAO {
 			return 0;
 		}
 		
+	}
+	
+	public List<Adiacenza> getAdiacenze() {
+		String sql = "SELECT e1.object_id as id1, e2.object_id as id2, COUNT(*) AS peso "
+				+ "FROM exhibition_objects AS e1, exhibition_objects AS e2 "
+				+ "WHERE e1.exhibition_id = e2.exhibition_id AND e1.object_id > e2.object_id "
+				+ "GROUP BY e1.object_id, e2.object_id";
+		
+		Connection conn = DBConnect.getConnection();
+		List<Adiacenza> result = new ArrayList<Adiacenza>();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet res = st.executeQuery();
+			
+			while(res.next()) {
+				result.add(new Adiacenza(res.getInt("id1"), res.getInt("id2"), res.getInt("peso")));
+			}
+			
+			st.close();
+			res.close();
+			conn.close();
+			
+			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 }

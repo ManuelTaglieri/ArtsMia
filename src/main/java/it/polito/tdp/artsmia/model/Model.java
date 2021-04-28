@@ -35,8 +35,8 @@ public class Model {
 		//APPROCCIO 1
 		// -> Doppio ciclo for sui vertici
 		// -> Dati due vertici, controllo se sono collegati
-		
-		for(ArtObject a1 : this.grafo.vertexSet()) {
+		//Non giunge a termine -> ci sono troppi vertici!
+		/*for(ArtObject a1 : this.grafo.vertexSet()) {
 			for (ArtObject a2 : this.grafo.vertexSet()) {
 				if (!a1.equals(a2) && !this.grafo.containsEdge(a1,a2)) {
 					//devo collegare a1 ad a2?
@@ -46,6 +46,12 @@ public class Model {
 					}
 				}
 			}
+		}*/
+		
+		//APPROCCIO 3 (meglio usare sempre questo!)
+		
+		for (Adiacenza a : dao.getAdiacenze()) {
+			Graphs.addEdge(this.grafo, idMap.get(a.getId1()), idMap.get(a.getId2()), a.getPeso());
 		}
 		
 		System.out.println("GRAFO CREATO!");
