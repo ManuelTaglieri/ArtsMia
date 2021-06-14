@@ -7,6 +7,7 @@ package it.polito.tdp.artsmia;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.artsmia.model.ArtObject;
 import it.polito.tdp.artsmia.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,7 +27,7 @@ public class FXMLController {
     private URL location;
 
     @FXML // fx:id="boxLUN"
-    private ChoiceBox<?> boxLUN; // Value injected by FXMLLoader
+    private ChoiceBox<Integer> boxLUN; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnCalcolaComponenteConnessa"
     private Button btnCalcolaComponenteConnessa; // Value injected by FXMLLoader
@@ -47,16 +48,66 @@ public class FXMLController {
     
     @FXML
     void doAnalizzaOggetti(ActionEvent event) {
-
+    	//creo il grafo
+    	txtResult.clear();
+    	this.model.creaGrafo();
+    	txtResult.appendText("GRAFO CREATO!!\n\n");
+    	txtResult.appendText("# VERTICI: " + this.model.getNVertici());
+    	txtResult.appendText(" # ARCHI: " + this.model.getNArchi());
     }
 
     @FXML
     void doCalcolaComponenteConnessa(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	
+    	try {
+    		
+    		int id = Integer.parseInt(txtObjectId.getText());
+    	
+    		if (this.model.presente(id)) {
+    			txtResult.appendText("Numero di vertici nella componente connessa: " + this.model.getCompConnessa(id));
+    			boxLUN.getItems().clear();
+    			for (int i = 2; i<=this.model.getCompConnessa(id); i++) {
+        			boxLUN.getItems().add(i);
+        		}
+    		} else {
+    			txtResult.appendText("Errore: il codice non è presente nel grafico");
+    		}
+    		
+    		
+    	} catch (NumberFormatException e) {
+    		txtResult.appendText("Errore: il codice dell'oggetto deve essere un numero intero");
+    		return;
+    	}
 
     }
 
     @FXML
     void doCercaOggetti(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	
+    	try {
+    		
+    		int id = Integer.parseInt(txtObjectId.getText());
+    		
+    		if (boxLUN.getValue() !=null) {
+    			txtResult.setText("Percorso migliore:\n");
+    			for( ArtObject o : this.model.ricerca(boxLUN.getValue(), id)) {
+    				txtResult.appendText(o.toString()+"\n");
+    			}
+    			txtResult.appendText("Peso totale: "+this.model.getPesoMax());
+    			
+    		} else {
+    			txtResult.setText("Errore: inserire un valore per la lunghezza, se non ci sono valori nel menù cliccare componente connessa per generarli");
+    		}
+    		
+    		
+    	} catch (NumberFormatException e) {
+    		txtResult.appendText("Errore: il codice dell'oggetto deve essere un numero intero");
+    		return;
+    	}
 
     }
 
